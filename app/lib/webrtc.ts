@@ -1,10 +1,11 @@
 import Peer from "simple-peer";
+import { Socket } from "socket.io-client";
 
 export class WebRTCManager {
   private localStream: MediaStream | null = null;
   private peers: Map<string, Peer.Instance> = new Map();
 
-  constructor(private socket: any) {}
+  constructor(private socket: Socket | null) {}
 
   async initializeMedia(video: boolean = true, audio: boolean = true) {
     try {
@@ -44,14 +45,15 @@ export class WebRTCManager {
       );
     });
 
-    peer.on("error", (err: any) => {
+    peer.on("error", (err: Error) => {
       console.error("Peer error:", err);
     });
 
     this.peers.set(peerId, peer);
     return peer;
   }
-  handleIncomingSignal(fromId: string, signal: any) {
+  
+  handleIncomingSignal(fromId: string, signal: Peer.SignalData) {
     let peer = this.peers.get(fromId);
 
     if (!peer) {
@@ -94,8 +96,11 @@ export class WebRTCManager {
 
     for (const peer of this.peers.values()) {
       const oldVideoTrack = videoTracks[0];
-      if (oldVideoTrack) {
-        peer.replaceTrack(oldVideoTrack, null as any, this.localStream);
+      if (oldVideoTrack && this.localStream) {
+        const audioTrack = this.localStream.getAudioTracks()[0];
+        if (audioTrack) {
+          peer.replaceTrack(oldVideoTrack, audioTrack, this.localStream);
+        }
       }
     }
   }

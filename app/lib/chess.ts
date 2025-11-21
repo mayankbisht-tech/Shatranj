@@ -1,23 +1,25 @@
-import {prisma} from './prisma';
+import { prisma } from './prisma';
 import { Chess } from 'chess.js';
-export class ChessGameManager{
+
+export class ChessGameManager {
     private games: Map<string, Chess>;
-    constructor(){
-        this.games=new Map();
+    
+    constructor() {
+        this.games = new Map();
     }
-    async createGame(roomId:string){
-        const game=await prisma.game.create({
+    
+    async createGame(roomId: string) {
+        await prisma.game.create({
             data: {
-                room_id:roomId,
-                status:"in_progress",
+                room_id: roomId,
+                status: "in_progress",
             }
         });
-        const chess=new Chess();
-        this.games.set(roomId, new Chess());
+        const chess = new Chess();
+        this.games.set(roomId, chess);
         return {
-        roomId:roomId,
-        current_fen:chess.fen(),
-        
+            roomId: roomId,
+            current_fen: chess.fen(),
         };
     }
 } 

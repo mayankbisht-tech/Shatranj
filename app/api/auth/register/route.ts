@@ -15,16 +15,19 @@ export async function POST(request: Request) {
             message:"Registration successful",
             user:{
                 id:user.id,
-        fullname: user.fullname,
-        username: user.username,
-        email: user.email,
-        avatar: user.avatar,
+                fullname: user.fullname,
+                username: user.username,
+                email: user.email,
+                avatar: user.avatar,
+                score: user.score,
             },
             token,
         });
-    } catch (err: any) {
+    } catch (err) {
+        console.error("Registration error:", err);
+        const errorMessage = err instanceof Error ? err.message : "Registration failed";
         return NextResponse.json(
-            { error: err.message || "Registration failed" },
+            { error: errorMessage },
             { status: 500 }
         );
     }

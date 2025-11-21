@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
         pass: process.env.SMTP_PASS,
     },
 });
-transporter.verify((error, success) => {
+transporter.verify((error) => {
     if (error) {
         console.log('Error configuring email transporter:', error);
     } else {

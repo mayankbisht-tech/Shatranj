@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { authenticateUser,generateToken } from "@/app/lib/auth";
+import { authenticateUser } from "@/app/lib/auth";
 
 export async function POST(request: Request) {
     try{
@@ -13,10 +13,11 @@ export async function POST(request: Request) {
             message:"Login successful",
             user:{
                 id:user.id,
-        fullname: user.fullname,
-        username: user.username,
-        email: user.email,
-        avatar: user.avatar,
+                fullname: user.fullname,
+                username: user.username,
+                email: user.email,
+                avatar: user.avatar,
+                score: user.score,
             },
             token,
         })
@@ -30,9 +31,11 @@ export async function POST(request: Request) {
       path: "/",
     });
         return response;
-    } catch (err: any) {
+    } catch (err) {
+    console.error("Login error:", err);
+    const errorMessage = err instanceof Error ? err.message : "Login failed";
     return NextResponse.json(
-      { error: err.message || "Login failed" },
+      { error: errorMessage },
       { status: 401 }
     );
 }}

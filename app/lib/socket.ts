@@ -51,7 +51,7 @@ export class SocketManager {
     });
   }
 
-  private async handleCreateRoom(socket: Socket, { roomId, userId }: any) {
+  private async handleCreateRoom(socket: Socket, { roomId }: { roomId: string; userId: string }) {
     this.rooms.set(roomId, [socket.id]);
     socket.join(roomId);
     this.startPreGameTimer(roomId);
@@ -59,7 +59,7 @@ export class SocketManager {
     socket.emit("room:created", { roomId });
   }
 
-  private async handleJoinRoom(socket: Socket, { roomId }: any) {
+  private async handleJoinRoom(socket: Socket, { roomId }: { roomId: string }) {
     const players = this.rooms.get(roomId) || [];
 
     if (players.length >= 2) {
@@ -133,7 +133,7 @@ export class SocketManager {
     const timer = this.timers.get(roomId);
     if (timer) clearTimeout(timer);
   }
-  private async handleChessMove(socket: Socket, { roomId, move }: any) {
+  private async handleChessMove(socket: Socket, { roomId, move }: { roomId: string; move: string }) {
     const game = this.games.get(roomId);
     if (!game) return;
 
@@ -176,7 +176,7 @@ export class SocketManager {
     }
   }
 
-  private forwardSignal(socket: Socket, data: any, event: string) {
+  private forwardSignal(socket: Socket, data: { to: string; signal: unknown }, event: string) {
     const { to, signal } = data;
     this.io.to(to).emit(event, {
       from: socket.id,
